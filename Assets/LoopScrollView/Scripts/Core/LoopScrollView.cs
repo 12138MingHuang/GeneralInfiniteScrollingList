@@ -7,34 +7,34 @@ using UnityEngine.UI;
 namespace LoopScrollViewNamespace
 {
     /// <summary>
-    /// LoopScrollView工具类
+    /// 工具类：为循环滚动列表提供一些辅助功能
     /// </summary>
     public class LoopScrollViewUtils
     {
         /// <summary>
-        /// 设置是否激活
+        /// 设置物体的激活状态
         /// </summary>
-        /// <param name="obj">物体对象</param>
-        /// <param name="isActive">是否激活</param>
+        /// <param name="obj">目标游戏物体</param>
+        /// <param name="isActive">激活状态（true为激活，false为隐藏）</param>
         public static void SetActive(GameObject obj, bool isActive)
         {
-            if (obj == null) return;
+            if (obj == null) return; // 检查对象是否为null
             obj.SetActive(isActive);
         }
     }
     
     /// <summary>
-    /// 循环滚动方向
+    /// 滚动方向枚举：指定列表的滚动方向
     /// </summary>
     public enum LoopScrollDirection
     {
         /// <summary>
-        /// 水平方向
+        /// 水平方向滚动
         /// </summary>
         Horizontal,
         
         /// <summary>
-        /// 垂直方向
+        /// 垂直方向滚动
         /// </summary>
         Vertical
     }
@@ -45,79 +45,161 @@ namespace LoopScrollViewNamespace
     [DisallowMultipleComponent]
     public class LoopScrollView : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
     {
-
+        /// <summary>
+        /// 起始箭头，指示列表滚动的首部
+        /// </summary>
         public GameObject pointingFirstArrow;
 
+        /// <summary>
+        /// 末尾箭头，指示列表滚动的尾部
+        /// </summary>
         public GameObject pointingEndArrow;
         
+        /// <summary>
+        /// 列表滚动方向，默认值为水平滚动
+        /// </summary>
         public LoopScrollDirection direction = LoopScrollDirection.Horizontal;
         
+        /// <summary>
+        /// 是否显示指示箭头
+        /// </summary>
         public bool isShowArrow = true;
 
+        /// <summary>
+        /// 每行或每列的Cell数量（适用于网格布局）
+        /// </summary>
         public int row = 1;
 
         /// <summary>
-        /// 间隔
+        /// Cell间的间隔（像素单位）
         /// </summary>
         public float spacing = 0f;
 
         /// <summary>
-        /// 指定的cell
+        /// 列表中单个Cell的预制体
         /// </summary>
         public GameObject cellGameObject;
 
+        /// <summary>
+        /// Cell更新回调函数，用于动态更新内容
+        /// </summary>
         protected Action<GameObject, int> funcCallBackFunc;
+
+        /// <summary>
+        /// Cell点击回调函数，用于处理用户交互
+        /// </summary>
         protected Action<GameObject, int> funcOnClickCallBack;
+
+        /// <summary>
+        /// 按钮点击回调函数，用于特定交互场景
+        /// </summary>
         protected Action<int ,bool, GameObject> funcOnButtonClickCallBack;
 
+        /// <summary>
+        /// 列表所在的RectTransform组件
+        /// </summary>
         protected RectTransform rectTrans;
 
+        /// <summary>
+        /// 可滚动区域的宽度
+        /// </summary>
         protected float planeWidth;
+
+        /// <summary>
+        /// 可滚动区域的高度
+        /// </summary>
         protected float planeHeight;
         
+        /// <summary>
+        /// Content区域的宽度
+        /// </summary>
         protected float contentWidth;
+
+        /// <summary>
+        /// Content区域的高度
+        /// </summary>
         protected float contentHeight;
         
+        /// <summary>
+        /// 单个Cell的宽度
+        /// </summary>
         protected float cellObjectWidth;
+
+        /// <summary>
+        /// 单个Cell的高度
+        /// </summary>
         protected float cellObjectHeight;
         
+        /// <summary>
+        /// 滚动区域的Content对象（所有Cell的父对象）
+        /// </summary>
         protected GameObject content;
+
+        /// <summary>
+        /// Content的RectTransform组件
+        /// </summary>
         protected RectTransform contentRectTrans;
         
         /// <summary>
-        /// 记录物体的坐标和物体
+        /// 存储Cell的位置信息与实例对象
         /// </summary>
         protected struct CellInfo
         {
-            public Vector3 pos;
-            public GameObject obj;
+            public Vector3 pos;  // Cell的位置
+            public GameObject obj;  // Cell的游戏对象实例
         }
         
+        /// <summary>
+        /// 存储所有Cell的信息
+        /// </summary>
         protected CellInfo[] cellInfos;
         
+        /// <summary>
+        /// 是否已完成初始化
+        /// </summary>
         private bool m_IsInited = false;
         
+        /// <summary>
+        /// 列表的ScrollRect组件
+        /// </summary>
         protected ScrollRect scrollRect;
 
         /// <summary>
-        /// 列表数量
+        /// 当前列表的最大Cell数量
         /// </summary>
         protected int maxCount = -1;
 
+        /// <summary>
+        /// 当前视图范围内的最小Cell索引
+        /// </summary>
         protected int minIndex = -1;
+
+        /// <summary>
+        /// 当前视图范围内的最大Cell索引
+        /// </summary>
         protected int maxIndex = -1;
         
         /// <summary>
-        /// 是否清除列表
+        /// 标志位：是否需要清空列表
         /// </summary>
         protected bool isClearList = false;
 
         #region 初始化
 
+        /// <summary>
+        /// 初始化滚动列表
+        /// </summary>
+        /// <param name="callBack">Cell的内容更新回调</param>
         public virtual void Init(Action<GameObject, int> callBack)
         {
             Init(callBack, null);
         }
+        /// <summary>
+        /// 初始化滚动列表，支持点击事件回调
+        /// </summary>
+        /// <param name="callBack">Cell的内容更新回调</param>
+        /// <param name="onClickCallBack">Cell的点击事件回调</param>
+        /// <param name="onButtonClickCallBack">按钮的点击事件回调</param>
         public virtual void Init(Action<GameObject, int> callBack, Action<GameObject, int> onClickCallBack, Action<int, bool, GameObject> onButtonClickCallBack)
         {
             if (onButtonClickCallBack != null)
@@ -126,10 +208,14 @@ namespace LoopScrollViewNamespace
             }
             Init(callBack, onClickCallBack);
         }
-
+        /// <summary>
+        /// 核心初始化逻辑：配置内容区域、回调函数并绑定事件
+        /// </summary>
+        /// <param name="callBack">内容更新回调</param>
+        /// <param name="onClickCallBack">点击事件回调</param>
         public virtual void Init(Action<GameObject, int> callBack, Action<GameObject, int> onClickCallBack)
         {
-            DisposeAll();
+            DisposeAll(); // 清理之前的设置
             
             funcCallBackFunc = callBack;
             
@@ -138,12 +224,13 @@ namespace LoopScrollViewNamespace
                 funcOnClickCallBack = onClickCallBack;
             }
             
-            if(m_IsInited) return;
+            if(m_IsInited) return; // 防止重复初始化
 
             content = GetComponent<ScrollRect>().content.gameObject;
 
             if (cellGameObject == null)
             {
+                // 获取默认的第一个子物体作为Cell模板
                 cellGameObject = content.transform.GetChild(0).gameObject;
             }
             
@@ -179,6 +266,7 @@ namespace LoopScrollViewNamespace
             scrollRect.onValueChanged.RemoveAllListeners();
             //添加滑动事件
             scrollRect.onValueChanged.AddListener(ScrollRectListener);
+            // 设置箭头的可见性
             if(pointingFirstArrow != null || pointingEndArrow != null)
             {
                 if (!isShowArrow)
@@ -195,13 +283,16 @@ namespace LoopScrollViewNamespace
                 OnDragListener(Vector2.zero);
             }
             
-            m_IsInited = true;
+            m_IsInited = true; // 设置初始化标志位
         }
 
-        //检查 Anchor 是否正确
+        /// <summary>
+        /// 检查并修正RectTransform的Anchor设置
+        /// </summary>
+        /// <param name="rectTrans">需要检查的RectTransform</param>
         private void CheckAnchor(RectTransform rectTrans)
         {
-            if (direction == LoopScrollDirection.Horizontal)
+            if (direction == LoopScrollDirection.Vertical)
             {
                 if (!(rectTrans.anchorMin == new Vector2(0f, 1f) && rectTrans.anchorMax == new Vector2(0f, 1f) ||
                       rectTrans.anchorMin == new Vector2(0f, 1f) && rectTrans.anchorMax == new Vector2(1f, 1f)))
@@ -232,9 +323,9 @@ namespace LoopScrollViewNamespace
         public virtual void ShowList(string numStr) { }
 
         /// <summary>
-        /// 显示列表
+        /// 显示列表：根据数量动态加载并显示Cell
         /// </summary>
-        /// <param name="num">列表数量</param>
+        /// <param name="num">需要显示的Cell总数量</param>
         public virtual void ShowList(int num)
         {
             minIndex = -1;
