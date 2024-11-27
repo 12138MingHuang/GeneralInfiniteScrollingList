@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class LoopScrollViewDemo : MonoBehaviour
 {
     public LoopScrollView HorizontalScroll;
+    public LoopScrollView VerticalScroll;
 
     public void Start()
     {
@@ -17,6 +18,9 @@ public class LoopScrollViewDemo : MonoBehaviour
     {
         HorizontalScroll.Init(NormalCallBack);
         HorizontalScroll.ShowList(50);
+        
+        VerticalScroll.Init(NormalCallBack);
+        VerticalScroll.ShowList(50);
     }
     
     private void NormalCallBack(GameObject cell, int index)

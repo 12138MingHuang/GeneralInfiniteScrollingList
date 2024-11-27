@@ -181,6 +181,16 @@ namespace LoopScrollViewNamespace
             scrollRect.onValueChanged.AddListener(ScrollRectListener);
             if(pointingFirstArrow != null || pointingEndArrow != null)
             {
+                if (!isShowArrow)
+                {
+                    pointingFirstArrow.SetActive(false);
+                    pointingEndArrow.SetActive(false);
+                }
+                else
+                {
+                    pointingFirstArrow.SetActive(true);
+                    pointingEndArrow.SetActive(true);
+                }
                 scrollRect.onValueChanged.AddListener(OnDragListener);
                 OnDragListener(Vector2.zero);
             }
@@ -233,7 +243,7 @@ namespace LoopScrollViewNamespace
             // 计算Content尺寸
             if(direction == LoopScrollDirection.Vertical)
             {
-                float contentSize = (spacing + contentHeight) * Mathf.CeilToInt((float)num / row);
+                float contentSize = (spacing + cellObjectHeight) * Mathf.CeilToInt((float)num / row);
                 contentHeight = contentSize;
                 contentWidth = contentRectTrans.sizeDelta.x;
                 contentSize = contentSize < rectTrans.rect.height ? rectTrans.rect.height : contentSize;
@@ -245,7 +255,7 @@ namespace LoopScrollViewNamespace
             }
             else
             {
-                float contentSize = (spacing + contentWidth) * Mathf.CeilToInt((float)num / row);
+                float contentSize = (spacing + cellObjectWidth) * Mathf.CeilToInt((float)num / row);
                 contentWidth = contentSize;
                 contentHeight = contentRectTrans.sizeDelta.x;
                 contentSize = contentSize < rectTrans.rect.width ? rectTrans.rect.width : contentSize;
@@ -508,9 +518,10 @@ namespace LoopScrollViewNamespace
         /// <param name="value">滑动值</param>
         protected void OnDragListener(Vector2 value)
         {
+            if(!isShowArrow) return;
             // 当前滑动的位置，0表示最上（左），1表示最下（右）
             float normalizedPos = direction == LoopScrollDirection.Vertical ? scrollRect.verticalNormalizedPosition : scrollRect.horizontalNormalizedPosition;
-
+            
             if (direction == LoopScrollDirection.Vertical)
             {
                 if (contentHeight - rectTrans.rect.height < 10)
@@ -529,22 +540,44 @@ namespace LoopScrollViewNamespace
                     return;
                 }
             }
-
-            if (normalizedPos >= 0.9f)
+            
+            if (direction == LoopScrollDirection.Vertical)
             {
-                LoopScrollViewUtils.SetActive(pointingFirstArrow, false);
-                LoopScrollViewUtils.SetActive(pointingEndArrow, true);
-            }
-            else if (normalizedPos <= 0.1f)
-            {
-                LoopScrollViewUtils.SetActive(pointingFirstArrow, true);
-                LoopScrollViewUtils.SetActive(pointingEndArrow, false);
+                switch (normalizedPos)
+                {
+                    case >= 0.9f:
+                        LoopScrollViewUtils.SetActive(pointingFirstArrow, false);
+                        LoopScrollViewUtils.SetActive(pointingEndArrow, true);
+                        break;
+                    case <= 0.1f:
+                        LoopScrollViewUtils.SetActive(pointingFirstArrow, true);
+                        LoopScrollViewUtils.SetActive(pointingEndArrow, false);
+                        break;
+                    default:
+                        LoopScrollViewUtils.SetActive(pointingFirstArrow, true);
+                        LoopScrollViewUtils.SetActive(pointingEndArrow, true);
+                        break;
+                }
             }
             else
             {
-                LoopScrollViewUtils.SetActive(pointingFirstArrow, true);
-                LoopScrollViewUtils.SetActive(pointingEndArrow, true);
+                switch (normalizedPos)
+                {
+                    case >= 0.9f:
+                        LoopScrollViewUtils.SetActive(pointingFirstArrow, true);
+                        LoopScrollViewUtils.SetActive(pointingEndArrow, false);
+                        break;
+                    case <= 0.1f:
+                        LoopScrollViewUtils.SetActive(pointingFirstArrow, false);
+                        LoopScrollViewUtils.SetActive(pointingEndArrow, true);
+                        break;
+                    default:
+                        LoopScrollViewUtils.SetActive(pointingFirstArrow, true);
+                        LoopScrollViewUtils.SetActive(pointingEndArrow, true);
+                        break;
+                }
             }
+            
         }
 
         /// <summary>
@@ -595,6 +628,7 @@ namespace LoopScrollViewNamespace
                 cell = Instantiate(cellGameObject);
             }
             cell.transform.SetParent(content.transform);
+            cell.transform.localPosition = Vector3.zero;
             cell.transform.localScale = Vector3.one;
             LoopScrollViewUtils.SetActive(cell, true);
             
