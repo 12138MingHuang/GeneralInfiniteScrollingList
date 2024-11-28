@@ -155,9 +155,14 @@ namespace LoopScrollViewNamespace
         protected CellInfo[] cellInfos;
         
         /// <summary>
+        /// 是否已完成初始化基类专用
+        /// </summary>
+        private bool m_isInited = false;
+        
+        /// <summary>
         /// 是否已完成初始化
         /// </summary>
-        private bool m_IsInited = false;
+        protected bool isInited = false;
         
         /// <summary>
         /// 列表的ScrollRect组件
@@ -224,7 +229,7 @@ namespace LoopScrollViewNamespace
                 funcOnClickCallBack = onClickCallBack;
             }
             
-            if(m_IsInited) return; // 防止重复初始化
+            if(m_isInited) return; // 防止重复初始化
 
             content = GetComponent<ScrollRect>().content.gameObject;
 
@@ -283,7 +288,7 @@ namespace LoopScrollViewNamespace
                 OnDragListener(Vector2.zero);
             }
             
-            m_IsInited = true; // 设置初始化标志位
+            m_isInited = true; // 设置初始化标志位
         }
 
         /// <summary>
@@ -361,7 +366,7 @@ namespace LoopScrollViewNamespace
             int lastEndIndex = 0;
             
             //过多的物体放进对象池（首次调用showList时候无效）
-            if (m_IsInited)
+            if (isInited)
             {
                 lastEndIndex = num - maxCount > 0 ? maxCount : num;
                 lastEndIndex = isClearList ? 0 : lastEndIndex;
@@ -460,7 +465,7 @@ namespace LoopScrollViewNamespace
             }
             
             maxCount = num;
-            m_IsInited = true;
+            isInited = true;
             
             OnDragListener(Vector2.zero);
             
