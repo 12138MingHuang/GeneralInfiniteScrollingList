@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using CircularScrollView;
 using UnityEngine;
 using LoopScrollViewNamespace;
 using UnityEngine.UI;
@@ -15,6 +14,8 @@ public class LoopScrollViewDemo : MonoBehaviour
     
     public ExpandTipsLoopScrollView VerticalExpandTipsScroll;
     public GameObject expandTips;
+    
+    public FlipPageLoopScrollView HorizontalFlipPageScroll;
 
     public void Start()
     {
@@ -37,6 +38,9 @@ public class LoopScrollViewDemo : MonoBehaviour
         
         VerticalExpandTipsScroll.Init(ExpandTipsCallBack, OnClickExpandTipsCallBack);
         VerticalExpandTipsScroll.ShowList(30);
+        
+        HorizontalFlipPageScroll.Init(FlipPageCallBack);
+        HorizontalFlipPageScroll.ShowList(10);
     }
     
     private void NormalCallBack(GameObject cell, int index)
@@ -62,5 +66,10 @@ public class LoopScrollViewDemo : MonoBehaviour
     private void OnClickExpandTipsCallBack(GameObject cell, int index)
     {
         expandTips.transform.Find("Text").GetComponent<Text>().text = string.Format("我是{0}号", index);
+    }
+    
+    private void FlipPageCallBack(GameObject cell, int index)
+    {
+        cell.transform.Find("Text1").GetComponent<Text>().text = "Drag Me : " + index.ToString();
     }
 }

@@ -695,8 +695,8 @@ namespace LoopScrollViewNamespace
         public virtual void SetToPageIndex(int index) { }
         
         public virtual void OnBeginDrag(PointerEventData eventData) { }
-        public void OnEndDrag(PointerEventData eventData) { }
-        public virtual void OnDrag(PointerEventData eventData) { }
+        public void OnDrag(PointerEventData eventData) { }
+        public virtual void OnEndDrag(PointerEventData eventData) { }
         
         #endregion
 
