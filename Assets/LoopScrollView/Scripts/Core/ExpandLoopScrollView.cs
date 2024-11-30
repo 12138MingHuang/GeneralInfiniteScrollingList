@@ -119,7 +119,7 @@ namespace LoopScrollViewNamespace
                 GameObject button = GetPoolsButtonObj();
                 button.name = i.ToString();
                 Button buttonComponent = button.GetComponent<Button>();
-                if(m_IsAddedListener.ContainsKey(button) && buttonComponent != null)
+                if(!m_IsAddedListener.ContainsKey(button) && buttonComponent != null)
                 {
                     m_IsAddedListener[button] = true;
                     buttonComponent.onClick.AddListener(() =>
@@ -135,13 +135,13 @@ namespace LoopScrollViewNamespace
                 if(direction == LoopScrollDirection.Vertical)
                 {
                     pos = m_ExpandButtonHeight * i + spacing * (i + 1);
-                    pos += i > 0 ? (cellObjectHeight * spacing) * Mathf.CeilToInt((float)beforeCellCount / row) : 0;
+                    pos += i > 0 ? (cellObjectHeight + spacing) * Mathf.CeilToInt((float)beforeCellCount / row) : 0;
                     button.transform.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(m_ExpandButtonX, -pos, 0);
                 }
                 else
                 {
                     pos = m_ExpandButtonWidth * i + spacing * (i + 1);
-                    pos += i > 0 ? (cellObjectWidth * spacing) * Mathf.CeilToInt((float)beforeCellCount / row) : 0;
+                    pos += i > 0 ? (cellObjectWidth + spacing) * Mathf.CeilToInt((float)beforeCellCount / row) : 0;
                     button.transform.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(pos, m_ExpandButtonY, 0);
                 }
                 
@@ -281,12 +281,12 @@ namespace LoopScrollViewNamespace
             Vector2 size = contentRectTrans.sizeDelta;
             if(direction == LoopScrollDirection.Vertical)
             {
-                float height = m_ExpandInfos[index].isExpand ? size.y + m_ExpandButtonHeight : size.y - m_ExpandButtonHeight;
+                float height = m_ExpandInfos[index].isExpand ? size.y + m_ExpandInfos[index].size : size.y - m_ExpandInfos[index].size;
                 contentRectTrans.sizeDelta = new Vector2(size.x, height);
             }
             else
             {
-                float width = m_ExpandInfos[index].isExpand ? size.x + m_ExpandButtonWidth : size.x - m_ExpandButtonWidth;
+                float width = m_ExpandInfos[index].isExpand ? size.x + m_ExpandInfos[index].size : size.x - m_ExpandInfos[index].size;
                 contentRectTrans.sizeDelta = new Vector2(width, size.y);
             }
             
@@ -335,8 +335,7 @@ namespace LoopScrollViewNamespace
                         if(direction == LoopScrollDirection.Vertical)
                         {
                             pos = cellObjectHeight * Mathf.FloorToInt(j / row) +
-                                  spacing * (Mathf.FloorToInt(j / row) + 1)
-                                ;
+                                  spacing * (Mathf.FloorToInt(j / row) + 1);
                             pos += (m_ExpandButtonHeight + spacing) * (i + 1);
                             pos += (cellObjectHeight + spacing) * Mathf.CeilToInt((float)beforeCellCount / row);
                             rowPos = cellObjectWidth * (j % row) + spacing * (j % row);
@@ -345,8 +344,7 @@ namespace LoopScrollViewNamespace
                         else
                         {
                             pos = cellObjectWidth * Mathf.FloorToInt(j / row) +
-                                  spacing * (Mathf.FloorToInt(j / row) + 1)
-                                ;
+                                  spacing * (Mathf.FloorToInt(j / row) + 1);
                             pos += (m_ExpandButtonWidth + spacing) * (i + 1);
                             pos += (cellObjectWidth + spacing) * Mathf.CeilToInt((float)beforeCellCount / row);
                             rowPos = cellObjectHeight * (j % row) + spacing * (j % row);
@@ -368,7 +366,7 @@ namespace LoopScrollViewNamespace
                         cell.gameObject.name = i + "_" + j.ToString();
                         
                         //回调
-                        if (cellInfo.obj != null)
+                        if (cellInfo.obj == null)
                         {
                             Func(funcCallBackFunc, button, cell, expandInfo.isExpand);
                         }
@@ -570,10 +568,8 @@ namespace LoopScrollViewNamespace
         /// </summary>
         private void ClearCell()
         {
-            Debug.Log("ClearCell " + isInited);
             if (!isInited)
             {
-                Debug.Log("请先初始化");
                 return;
             }
 

@@ -10,7 +10,9 @@ public class LoopScrollViewDemo : MonoBehaviour
     public LoopScrollView HorizontalScroll;
     public LoopScrollView VerticalScroll;
     
-    public ExpandLoopScrollView expandScroll;
+    public ExpandLoopScrollView VerticalExpandScroll;
+    public ExpandLoopScrollView HorizontalExpandScroll;
+    
 
     public void Start()
     {
@@ -25,8 +27,11 @@ public class LoopScrollViewDemo : MonoBehaviour
         VerticalScroll.Init(NormalCallBack);
         VerticalScroll.ShowList(50);
         
-        expandScroll.Init(ExpandCallBack);
-        expandScroll.ShowList("3|2|5|8");
+        VerticalExpandScroll.Init(ExpandCallBack);
+        VerticalExpandScroll.ShowList("3|2|5|8");
+        
+        HorizontalExpandScroll.Init(ExpandCallBack);
+        HorizontalExpandScroll.ShowList("3|2|50|8");
     }
     
     private void NormalCallBack(GameObject cell, int index)
