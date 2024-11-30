@@ -6962,7 +6962,7 @@ MonoBehaviour:
   isMaxRange: 0
   isOpenNavIcon: 1
   iconSize: 20
-  iconSpacing: 5
+  iconSpacing: 50
   selectIcon: {fileID: 21300000, guid: 1ff1209ab2a1b40fd9eecac9abb63b30, type: 3}
   normalIcon: {fileID: 21300000, guid: df9c0f6012c164af8b2ec1a928fa4f75, type: 3}
   objNavigation: {fileID: 6524138446772467272}
@@ -7083,7 +7083,7 @@ MonoBehaviour:
   pointingEndArrow: {fileID: 0}
   direction: 1
   isShowArrow: 1
-  row: 1
+  row: 2
   spacing: 15
   cellGameObject: {fileID: 3058488657687128208}
   expandTips: {fileID: 460851361409612878}
