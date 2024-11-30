@@ -13,6 +13,8 @@ public class LoopScrollViewDemo : MonoBehaviour
     public ExpandLoopScrollView VerticalExpandScroll;
     public ExpandLoopScrollView HorizontalExpandScroll;
     
+    public ExpandTipsLoopScrollView VerticalExpandTipsScroll;
+    public GameObject expandTips;
 
     public void Start()
     {
@@ -32,6 +34,9 @@ public class LoopScrollViewDemo : MonoBehaviour
         
         HorizontalExpandScroll.Init(ExpandCallBack);
         HorizontalExpandScroll.ShowList("3|2|50|8");
+        
+        VerticalExpandTipsScroll.Init(ExpandTipsCallBack, OnClickExpandTipsCallBack);
+        VerticalExpandTipsScroll.ShowList(30);
     }
     
     private void NormalCallBack(GameObject cell, int index)
@@ -47,5 +52,15 @@ public class LoopScrollViewDemo : MonoBehaviour
         {
             childCell.transform.Find("Text1").GetComponent<Text>().text = childIndex.ToString();
         }
+    }
+    
+    private void ExpandTipsCallBack(GameObject cell, int index)
+    {
+        cell.transform.Find("Text1").GetComponent<Text>().text = "Click Me : " + index.ToString();
+    }
+
+    private void OnClickExpandTipsCallBack(GameObject cell, int index)
+    {
+        expandTips.transform.Find("Text").GetComponent<Text>().text = string.Format("我是{0}号", index);
     }
 }
